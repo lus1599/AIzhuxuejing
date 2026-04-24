@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <input type="text" name="xueqi" placeholder="请输入学期" id="xueqi" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-inline">
+            <button type="button" id="search" data-type="reload" class="layui-btn layui-btn-normal">搜索</button>
+        </div>
+    </div>
+</div>
+
+<table class="layui-hide" id="scoreInfo" lay-filter="scoreInfoTable"></table>
+<div id="limit-page">
+
+</div>
+
+<script src="/lib/layui/layui.js" charset="utf-8"></script>
+</body>
+</html>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script>
+
+    //加载模块
+    layui.use(function () { //亦可加载特定模块：layui.use(['layer', 'laydate', function(){
+        //得到各种内置组件
+        var layer = layui.layer //弹层
+            , table = layui.table //表格
+            , element = layui.element //元素操作
+
+        // 页数的默认名称叫page,不是pageNo,每一页的长度不叫pageSize，叫limit，总的数据条数教count
+        //执行一个 table 实例
+        table.render({
+            elem: '#scoreInfo'
+            , height: 420
+            , url: '/api/score/one' //数据接口
+            , title: '助学金列表'
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', width: '5%', fixed: 'left'}
+                    , {field: 'stuName', title: '学生姓名', align: 'center', fixed: 'left'}
+                    , {field: 'collegeName', title: '班级', align: 'center'}
+                    , {field: 'stuNumber', title: '学号', align: 'center'}
+                    , {field: 'xueqi', title: '学期', align: 'center'}
+                    , {field: 'scoreDe', title: '语文', align: 'center',sort: true}
+                    , {field: 'scoreZhi', title: '数学', align: 'center',sort: true}
+                    , {field: 'scoreTi', title: '外语', align: 'center',sort: true}
+                    , {field: 'scoreNeng', title: '理综或文综', align: 'center',sort: true}
+                    , {field: 'scoreCount', title: '总分', align: 'center',sort: true}
+                    , {field: 'scoreAvg', title: '平均分', align: 'center',sort: true}
+                    , {field: 'ranking', title: '班级排名', align: 'center'}
+                ]
+            ]
+        });
+
+        // 获取到layui里面$重新赋值为$本质上跟jquery的$的差不多，然后给当前模块赋一个名字叫active，方便后面用
+        var $ = layui.$, active = {
+            reload: function () {
+                // 查询框里面输入的值
+                var xueqi = $("#xueqi");
+                //执行重载，roleTable是上面table容器的id值
+                table.reload('scoreInfo', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    },
+                    // 把需要传的值放在where里面，都是json格式
+                    where: {
+                        xueqi: xueqi.val(), //重载提交的参数
+                    }
+                });
+            }
+        };
+        // 点击搜索按钮查询，并重新加载table表格
+        $('#search').on('click', function () {
+            // 获取当前查询按钮的类型，layui里面的data-type属性值，这里是reload
+            var type = $(this).data('type');
+            // 告诉框架当前执行的是重新加载并通过call方法去执行
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</body>
+</html>

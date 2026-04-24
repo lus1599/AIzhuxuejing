@@ -1,0 +1,255 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+
+<!--<head>-->
+<!--&lt;!&ndash;    //用于控制页面&ndash;&gt;-->
+<!--    <meta charset="utf-8">-->
+<!--    <meta name="viewport"-->
+<!--        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <link rel="stylesheet" href="/layui/css/layui.css">-->
+<!--    <style>-->
+<!--        * {-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--        }-->
+<!--        /* 底部样式 */-->
+<!--        .footer {-->
+<!--            text-align: center; /* 水平居中 */-->
+<!--            padding: 0px 0; /* 上下内边距，可根据需要调整 */-->
+<!--            font-size: 20px; /* 字体大小，可根据需要调整 */-->
+<!--            color: #333; /* 字体颜色，可根据需要调整 */-->
+<!--        }-->
+
+<!--        /* 超链接样式 */-->
+<!--        .footer a {-->
+<!--            text-decoration: none; /* 去除下划线 */-->
+<!--            color: #282b33; /* 链接颜色，可根据需要调整 */-->
+<!--            transition: color 0.3s ease; /* 过渡效果，可选 */-->
+<!--        }-->
+
+<!--        .footer a:hover {-->
+<!--            color: #f80505; /* 鼠标悬停时的链接颜色，可根据需要调整 */-->
+<!--        }-->
+<!--        .link-bg {-->
+<!--            display: inline-block; /* 使元素成为行内块级元素，可以设置宽高 */-->
+<!--            /*background-image: url('/images/pic/zz.jpg'); !* 背景图片路径 *!*!*/-->
+<!--            /*background-size: cover; !* 图片覆盖整个容器 *!*/-->
+<!--            background-position: center; /* 图片居中显示 */-->
+<!--            background-repeat: no-repeat; /* 不重复显示图片 */-->
+<!--            padding: 70px 500px; /* 内边距，根据图片和文本大小调整 */-->
+<!--            text-align: center; /* 文本居中 */-->
+<!--            text-decoration: none; /* 去除下划线 */-->
+<!--            color: #fff; /* 文本颜色，根据图片调整 */-->
+<!--            transition: all 0.3s ease; /* 过渡效果 */-->
+<!--            background-color: #fff);-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--    <table class="layui-hide" id="zxjInfo" lay-filter="zxjInfoTable"></table>-->
+
+<!--    <script src="/lib/layui/layui.js" charset="utf-8"></script>-->
+
+
+<!--</body>-->
+
+<!--</html>-->
+
+<!--<script src="/js/jquery.min.js"></script>-->
+<!--<script src="/layui/layui.js"></script>-->
+<!--<script>-->
+
+<!--    //加载模块-->
+<!--    layui.use(function () { //亦可加载特定模块：layui.use(['layer', 'laydate', function(){-->
+<!--        //得到各种内置组件-->
+<!--        var layer = layui.layer //弹层-->
+<!--            , table = layui.table //表格-->
+<!--            , element = layui.element //元素操作-->
+
+<!--        // 页数的默认名称叫page,不是pageNo,每一页的长度不叫pageSize，叫limit，总的数据条数教count-->
+<!--        //执行一个 table 实例-->
+<!--        table.render({-->
+<!--            elem: '#zxjInfo'-->
+<!--            , height: 420-->
+<!--            , url: '/api/apply/apply_pass_stu_list' //数据接口-->
+<!--            , title: '助学金列表'-->
+<!--            , page: false //开启分页-->
+<!--            , cols: [-->
+<!--                [ //表头-->
+<!--                    { type: 'checkbox', width: '5%', fixed: 'left' }-->
+<!--                    , { field: 'zxjName', title: '助学金名', align: 'center', width: '15%', fixed: 'left', sort: true-->
+<!--                      }-->
+<!--                    , { field: 'stuName', title: '申请人', align: 'center', width: '15%', fixed: 'left' }-->
+<!--                    , { field: 'applyTime', title: '申请时间', width: '15%', align: 'center', sort: true, totalRow: true }-->
+<!--                    , { field: 'applyTiaojian', title: '申请理由', width: '25%', align: 'center', totalRow: true }-->
+<!--                    , {-->
+<!--                        field: 'img', title: '申请图片附件', width: '15%', align: 'center', templet: function (d) {-->
+<!--                            if (d.img === null) {-->
+<!--                                return '<span style="color: red">没有附件</span>';-->
+<!--                            } else {-->
+<!--                                return "<a style='color: blue' href='http://127.0.0.1:8080/api/file/" + d.img + "' target='_blank'>点击查看附件</a>";-->
+<!--                            }-->
+<!--                        }-->
+<!--                    }-->
+<!--                    , { field: 'status', title: '状态', width: '10%', align: 'center', totalRow: true }-->
+<!--                ]-->
+<!--            ]-->
+<!--        });-->
+
+<!--    });-->
+<!--</script>-->
+
+<!--<div class="footer">-->
+<!--&lt;!&ndash;    <a href="#" target="_blank" class="link-bg">若有疑问？请转到官网查询相关信息</a>&ndash;&gt;-->
+<!--</div>-->
+
+<!--</body>-->
+
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- 用于控制页面 -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 底部样式 */
+        .footer {
+            background-color: rgba(255, 255, 255, 0.9); /* 半透明白色背景 */
+            color: #333; /* 深灰色字体 */
+            text-align: center;
+            /*padding: 50px 0;*/
+            font-size: 18px; /* 字体增大 */
+            font-weight: bold; /* 字体加粗 */
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            border-top: 1px solid #e0e0e0; /* 添加顶部边框，使其更显层次感 */
+        }
+
+        /* 链接样式 */
+        .footer a {
+            color: #0066cc; /* 深蓝色链接 */
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease, text-decoration 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #f80505; /* 鼠标悬停时链接颜色 */
+            text-decoration: underline;
+        }
+
+        /* 社交媒体链接 */
+        .footer .social-links a {
+            margin: 0 15px;
+            font-size: 24px;
+            color: #0066cc; /* 深蓝色 */
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .footer .social-links a:hover {
+            transform: scale(1.1);
+            color: #f80505; /* 鼠标悬停时变化 */
+        }
+
+        /*.footer .social-links {*/
+        /*    margin: 25px 0;*/
+        /*}*/
+
+        .footer .contact-info p {
+            margin: 12px 0;
+            font-size: 16px; /* 调整为较大字体 */
+        }
+
+        /* 底部内容的分区样式 */
+        .footer .info {
+            margin-top: 20px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #444; /* 更深的灰色 */
+        }
+
+        .footer .info p {
+            margin-bottom: 15px;
+        }
+
+        /* 小屏幕优化 */
+        @media (max-width: 768px) {
+            .footer .social-links a {
+                font-size: 22px;
+            }
+
+            .footer .contact-info p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<table class="layui-hide" id="zxjInfo" lay-filter="zxjInfoTable"></table>
+
+<script src="/lib/layui/layui.js" charset="utf-8"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        var layer = layui.layer, table = layui.table, element = layui.element;
+
+        table.render({
+            elem: '#zxjInfo',
+            height: 420,
+            url: '/api/apply/apply_pass_stu_list',
+            title: '助学金列表',
+            page: false,
+            cols: [
+                [
+                    { type: 'checkbox', width: '5%', fixed: 'left' },
+                    { field: 'zxjName', title: '助学金名', align: 'center', width: '15%', fixed: 'left', sort: true },
+                    { field: 'stuName', title: '申请人', align: 'center', width: '15%', fixed: 'left' },
+                    { field: 'applyTime', title: '申请时间', width: '15%', align: 'center', sort: true, totalRow: true },
+                    { field: 'applyTiaojian', title: '申请理由', width: '25%', align: 'center', totalRow: true },
+                    {
+                        field: 'img', title: '申请图片附件', width: '15%', align: 'center', templet: function (d) {
+                            if (d.img === null) {
+                                return '<span style="color: red">没有附件</span>';
+                            } else {
+                                return "<a style='color: blue' href='http://127.0.0.1:8080/api/file/" + d.img + "' target='_blank'>点击查看附件</a>";
+                            }
+                        }
+                    },
+                    { field: 'status', title: '状态', width: '10%', align: 'center', totalRow: true }
+                ]
+            ]
+        });
+    });
+</script>
+
+<!-- 底部内容 -->
+<div class="footer">
+    <div class="info">
+        <p>台江县智能助学金管理信息系统为台江县学生提供便捷、高效的助学金申请、审核、发放等服务。通过该系统，学生可以快速提交申请，审批流程透明化，确保助学金的公平分配。</p>
+        <p>若有疑问，请访问 <a href="https://www.xszz.edu.cn/" target="_blank">全国助学金管理系统官网</a> 查阅相关信息。</p>
+        <div class="contact-info">
+            <p>联系我们：<a href="mailto:support@example.com" target="_blank">support@example.com</a></p>
+            <p>客服电话：123-456-7890</p>
+        </div>
+        <p>&copy; 2024 台江县智能助学金管理信息系统.保留所有权利.</p>
+    </div>
+</div>
+
+</body>
+
+</html>
+

@@ -1,0 +1,79 @@
+.login-page {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.form {
+	position: relative;
+	z-index: 1;
+	background: rgba(255, 255, 255, 0.5); /*透明度0.7*/
+	max-width: 400px;
+	margin: 0 auto;
+	padding: 30px 40px;
+	border-radius: 10px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+.form h2 {
+	text-align: center;
+	color: #333;
+	margin-bottom: 20px;
+}
+
+.form input {
+	outline: 0;
+	background: #f7f7f7;
+	width: 100%;
+	border: 1px solid #ccc;
+	margin: 0 0 15px;
+	padding: 12px;
+	border-radius: 5px;
+	font-size: 14px;
+}
+
+.form button {
+	background: #0dc3ae;
+	width: 100%;
+	border: none;
+	padding: 12px;
+	color: white;
+	font-size: 16px;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.form button:hover {
+	background: #0eb618;
+}
+
+.form .message {
+	margin-top: 15px;
+	color: #666;
+	font-size: 14px;
+	text-align: center;
+}
+
+.form .message a {
+	color: #0eb618;
+	text-decoration: none;
+}
+
+.form .message a:hover {
+	text-decoration: underline;
+}
+
+.code-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#imgBase64 {
+	width: 100px;
+	height: 50px;
+	cursor: pointer;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}

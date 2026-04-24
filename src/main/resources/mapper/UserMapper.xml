@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.mapper.UserMapper">
+    <select id="queryUserByName" resultType="User">
+        select *
+        from user
+        where username = #{username};
+    </select>
+
+    <select id="queryUserByUserId" resultType="com.zz.entities.User">
+        select *
+        from user
+        where user_id = #{userId}
+    </select>
+
+    <select id="queryUserByPage" resultType="com.zz.entities.User">
+        select * from user where 1=1
+        <if test="username != null and username != ''">
+            and username like #{username}
+        </if>
+        limit #{page},#{limit}
+    </select>
+
+    <select id="countsUser" resultType="com.zz.entities.User">
+        select count(*) counts from user where 1=1
+        <if test="username != null and username !=''">
+            and username like #{username}
+        </if>
+    </select>
+
+    <insert id="insertUserInfo" parameterType="User">
+        insert into user(username, password, user_id, salt, create_time)
+        values (#{user.username}, #{user.password}, #{user.userId}, #{user.salt}, #{user.createTime});
+    </insert>
+</mapper>

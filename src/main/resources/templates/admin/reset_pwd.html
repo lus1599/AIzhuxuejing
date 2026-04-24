@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>重置密码</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<body>
+<form class="layui-form" style="margin: 30px auto;width: 60%">
+    <input type="password" name="oldpwd" lay-verify="required|oldpwd" placeholder="原密码" class="layui-input">
+    <hr>
+    <input type="password" name="password1" lay-verify="required|password1" placeholder="新密码" class="layui-input">
+    <hr>
+    <input type="password" name="password2" lay-verify="required|password2" placeholder="再次输入新密码" class="layui-input">
+    <hr>
+    <button class="layui-btn" lay-submit lay-filter="demo-verify">提交</button>
+</form>
+
+<script src="/layui/layui.js"></script>
+<script src="/js/jquery-3.7.1.js"></script>
+<script>
+    let oldpwd = "";
+    let newpwd1 = "";
+    let newpwd2 = "";
+    layui.use(function () {
+        var form = layui.form;
+        // 自定义验证规则
+        form.verify({
+            // 验证用户名，且为必填项
+            oldpwd: function (value, elem) {
+                if (value === "") {
+                    return '密码不能为空';
+                }
+                oldpwd = value;
+            },
+            // 验证密码，且为必填项
+            password1: function (value, elem) {
+                if (value === "") {
+                    return '新密码不能为空';
+                }
+                newpwd1 = value;
+            },
+            // 验证座右铭，且为非必填项
+            password2: function (value, elem) {
+                if (newpwd1 !== value){
+                    return"两次输入的密码不同！"
+                }
+                newpwd2 = value;
+            }
+        });
+        // 提交事件
+        form.on('submit(demo-verify)', function (data) {
+            let reqData = {
+                "oldpwd":oldpwd,
+                "newpwd":newpwd1
+            }
+            // 此处可执行 Ajax 等操作
+            $.ajax({
+                url: "/api/admin/reset_pwd",
+                type: "post",
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify(reqData),
+                success: function (rs) {
+                    if (rs.code === undefined) {
+                        alert("请先登录")
+                        window.open("/page/sign_out", "_blank")
+                    }
+                    if (rs.code === 200) {
+                        alert("修改成功，请重新登录")
+                        window.open("/page/sign_out", "_parent")
+                    } else {
+                        layer.msg(rs.message)
+                    }
+                }
+
+            })
+            return false; // 阻止默认 form 跳转
+        });
+    })
+</script>
+
+</body>
+</html>

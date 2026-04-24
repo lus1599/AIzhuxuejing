@@ -1,0 +1,214 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:shiro="http://www.thymeleaf.org/thymeleaf-extras-shiro">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>欢迎页面-L-admin1.0</title>-->
+<!--    <meta name="renderer" content="webkit">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>-->
+<!--    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>-->
+<!--    <link rel="stylesheet" href="/css/font.css">-->
+<!--    <link rel="stylesheet" href="/css/xadmin.css">-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="x-body layui-anim layui-anim-up">-->
+<!--    <blockquote class="layui-elem-quote">欢迎管理员：<a href="javascript:;" th:text="${session.username}"></a></blockquote>-->
+<!--    <fieldset class="layui-elem-field">-->
+<!--        <legend>数据统计</legend>-->
+<!--        <div class="layui-field-box">-->
+<!--            <div class="layui-col-md12">-->
+<!--                <div class="layui-card">-->
+<!--                    <div class="layui-card-body">-->
+<!--                        <div class="layui-carousel x-admin-carousel x-admin-backlog" lay-anim="" lay-indicator="inside"-->
+<!--                             lay-arrow="none" style="width: 100%; height: 90px;">-->
+<!--                            <div carousel-item="">-->
+<!--                                <ul class="layui-row layui-col-space10 layui-this">-->
+<!--                                    <li class="layui-col-xs2">-->
+<!--                                        <a href="javascript:;" class="x-admin-backlog-body">-->
+<!--                                            <h3>学生人数</h3>-->
+<!--                                            <p>-->
+<!--                                                <cite id="countStu">10000</cite></p>-->
+<!--                                        </a>-->
+<!--                                    </li>-->
+<!--                                    <li class="layui-col-xs2">-->
+<!--                                        <a href="javascript:;" class="x-admin-backlog-body">-->
+<!--                                            <h3>老师人数</h3>-->
+<!--                                            <p>-->
+<!--                                                <cite id="countTea">1200</cite></p>-->
+<!--                                        </a>-->
+<!--                                    </li>-->
+<!--                                    <li class="layui-col-xs2">-->
+<!--                                        <a href="javascript:;" class="x-admin-backlog-body">-->
+<!--                                            <h3>用户人数</h3>-->
+<!--                                            <p>-->
+<!--                                                <cite id="countUser">1200</cite></p>-->
+<!--                                        </a>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </fieldset>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!--<script src="/js/jquery-3.7.1.js"></script>-->
+<!--<script type="text/javascript">-->
+<!--    //页面加载完成后调用-->
+<!--    window.onload = function () {-->
+<!--        this.getData();-->
+<!--    }-->
+
+<!--    function getData() {-->
+<!--        $.ajax({-->
+<!--            url: "/api/admin/count",-->
+<!--            type: "get",-->
+<!--            contentType: "application/json;charset=utf-8",-->
+<!--            success: function (res) {-->
+<!--                if (res.code === undefined) {-->
+<!--                    alert("请先登录")-->
+<!--                    window.open("/page/sign_out", "_parent")-->
+<!--                }-->
+<!--                if (res.code === 200) {-->
+<!--                    document.getElementById("countTea").textContent=res.data.countTea;-->
+<!--                    document.getElementById("countStu").textContent=res.data.countStu;-->
+<!--                    document.getElementById("countUser").textContent=res.data.countUser;-->
+<!--                } else {-->
+<!--                    layer.msg("获取验证码失败")-->
+<!--                }-->
+<!--            }-->
+<!--        })-->
+<!--    }-->
+<!--</script>-->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>管理面板 - 数据统计</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 导入 Bootstrap 和 Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            background: #ffffff;
+            color: #333;
+        }
+        .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .loading-spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #555;
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .card-title, .card-body p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">欢迎，<span id="adminName" class="text-primary">管理员</span>！</h1>
+    <p class="text-center text-muted">以下是当前系统的关键数据统计：</p>
+
+    <div class="row g-4 fade-in" id="statsContainer">
+        <!-- 动态卡片区域 -->
+    </div>
+</div>
+
+<div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">加载中...</span>
+    </div>
+    <p class="text-muted mt-2">数据加载中，请稍候...</p>
+</div>
+
+<!-- 导入 Bootstrap 和 jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 显示加载动画
+        const spinner = $('#loadingSpinner');
+        spinner.show();
+
+        // 获取数据并填充统计内容
+        fetchStats();
+
+        function fetchStats() {
+            $.ajax({
+                url: '/api/admin/count',
+                type: 'GET',
+                contentType: 'application/json;charset=utf-8',
+                success: function (res) {
+                    spinner.hide();
+
+                    if (!res.code || res.code !== 200) {
+                        alert('请先登录！');
+                        window.location.href = '/page/sign_out';
+                        return;
+                    }
+
+                    // 更新管理员名称
+                    $('#adminName').text(res.data.adminName || '管理员');
+
+                    // 动态生成统计卡片
+                    const stats = [
+                        { title: '学生人数', count: res.data.countStu, icon: 'fa-user-graduate', color: 'primary' },
+                        { title: '教师人数', count: res.data.countTea, icon: 'fa-chalkboard-teacher', color: 'success' },
+                        { title: '用户人数', count: res.data.countUser, icon: 'fa-users', color: 'warning' }
+                    ];
+
+                    const container = $('#statsContainer');
+                    stats.forEach(stat => {
+                        const card = `
+                            <div class="col-md-4">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <i class="fas ${stat.icon} text-${stat.color} fa-3x mb-3"></i>
+                                        <h5 class="card-title">${stat.title}</h5>
+                                        <p class="fs-1 text-${stat.color}">${stat.count}</p>
+                                    </div>
+                                </div>
+                            </div>`;
+                        container.append(card);
+                    });
+                },
+                error: function () {
+                    spinner.hide();
+                    alert('数据加载失败，请稍后再试！');
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

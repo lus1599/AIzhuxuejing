@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/lib/layui/layui.js"></script>
+    <script src="/lib/layui/lay/modules/layer.js"></script>
+    <script src="/lib/layui/lay/modules/admin.js"></script>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<style>
+    .own-input {
+        width: 250px;
+    }
+
+    .own-form {
+        margin-top: 20px;
+    }
+</style>
+
+<body>
+    <form class="layui-form own-form" onsubmit="return false" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" id="name" disabled
+                    autocomplete="off" class="layui-input own-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="text" id="sex" disabled
+                    autocomplete="off" class="layui-input own-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">年龄</label>
+            <div class="layui-input-block">
+                <input type="text" id="age" disabled
+                    autocomplete="off" class="layui-input own-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">工号</label>
+            <div class="layui-input-block">
+                <input type="text" id="workId" disabled
+                    autocomplete="off" class="layui-input own-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">注册时间</label>
+            <div class="layui-input-block">
+                <input type="text" id="createTime" disabled
+                    autocomplete="off" class="layui-input own-input">
+            </div>
+        </div>
+    </form>
+</body>
+<script>
+
+    layui.use(['layer', 'form'], function () {
+        let layer = layui.layer;
+        let form = layui.form;
+        // 提交事件
+        form.on('submit(demo-validate)', function () {
+            submitScoreInfo();
+        })
+    });
+    queryMyInfo();
+
+    function queryMyInfo() {
+        $.ajax({
+            url: "/api/user/info",
+            type: "get",
+            contentType: "application/json;charset=utf-8",
+            success: function (rs) {
+                if (rs.code === undefined) {
+                    alert("请先登录")
+                    window.open("/page/sign_out", "_blank")
+                }
+                $("#name").val(rs.data.name);
+                $("#sex").val(rs.data.sex);
+                $("#age").val(rs.data.age);
+                $("#workId").val(rs.data.workId);
+                $("#createTime").val(rs.data.createTime);
+            }
+
+        })
+    }
+</script>
+
+</html>

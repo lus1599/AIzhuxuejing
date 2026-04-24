@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="layui-hide" id="zxjInfo" lay-filter="zxjInfoTable"></table>
+
+    <script src="/lib/layui/layui.js" charset="utf-8"></script>
+</body>
+
+</html>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script>
+
+    //加载模块
+    layui.use(function () { //亦可加载特定模块：layui.use(['layer', 'laydate', function(){
+        //得到各种内置组件
+        var layer = layui.layer //弹层
+            , table = layui.table //表格
+            , element = layui.element //元素操作
+
+        // 页数的默认名称叫page,不是pageNo,每一页的长度不叫pageSize，叫limit，总的数据条数教count
+        //执行一个 table 实例
+        table.render({
+            elem: '#zxjInfo'
+            , height: 420
+            , url: '/api/apply/my_apply' //数据接口
+            , title: '助学金列表'
+            , page: true //开启分页
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', width: '5%', fixed: 'left' }
+                    , { field: 'zxjName', title: '助学金名', align: 'center', width: '20%', fixed: 'left' }
+                    , { field: 'applyTime', title: '申请时间', width: '20%', align: 'center', sort: true, totalRow: true }
+                    , { field: 'applyTiaojian', title: '申请理由', width: '25%', align: 'center', totalRow: true }
+                    , {
+                        field: 'img', title: '申请图片附件', width: '20%', align: 'center', templet: function (d) {
+                            if (d.img === null) {
+                                return '<span style="color: red">没有附件</span>';
+                            } else {
+                                return "<a style='color: blue' href='http://127.0.0.1:8080/api/file/" + d.img + "' target='_blank'>点击查看附件</a>";
+                            }
+                        }
+                    }
+                    , { field: 'status', title: '状态', width: '10%', align: 'center', totalRow: true }
+                ]
+            ]
+        });
+
+    });
+</script>
+</body>
+
+</html>

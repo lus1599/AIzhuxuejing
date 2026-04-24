@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace 表示对应的java接口-->
+<mapper namespace="com.zz.mapper.ScoreMapper">
+    <select id="queryPage" resultType="com.zz.entities.Score">
+        select * from score where 1=1
+        <if test="xueqi != null and xueqi != ''">
+            and xueqi like #{xueqi}
+        </if>
+        limit #{page},#{limit}
+    </select>
+    <select id="countScore" resultType="com.zz.entities.Score">
+        select count(*) counts from score where 1=1
+        <if test="xueqi != null and xueqi !=''">
+            and xueqi like #{xueqi}
+        </if>
+    </select>
+</mapper>

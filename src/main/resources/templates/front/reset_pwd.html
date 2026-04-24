@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>重置密码</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+<!--<style>-->
+<!--    /* 底部样式 */-->
+<!--    .footer1 {-->
+<!--    text-align: center; /* 水平居中 */-->
+<!--    padding: 0px 0; /* 上下内边距，可根据需要调整 */-->
+<!--    font-size: 20px; /* 字体大小，可根据需要调整 */-->
+<!--    color: #333; /* 字体颜色，可根据需要调整 */-->
+<!--    }-->
+
+<!--    /* 超链接样式 */-->
+<!--    .footer1 a {-->
+<!--    text-decoration: none; /* 去除下划线 */-->
+<!--    color: #282b33; /* 链接颜色，可根据需要调整 */-->
+<!--    transition: color 0.3s ease; /* 过渡效果，可选 */-->
+<!--    }-->
+
+<!--    .footer1 a:hover {-->
+<!--    color: #b30039; /* 鼠标悬停时的链接颜色，可根据需要调整 */-->
+<!--    }-->
+<!--    .link-bg {-->
+<!--    display: inline-block; /* 使元素成为行内块级元素，可以设置宽高 */-->
+<!--    /*background-image: url('/images/pic/zz.jpg'); !* 背景图片路径 *!*/-->
+<!--    /*background-size: cover; !* 图片覆盖整个容器 *!*/-->
+<!--    background-position: center; /* 图片居中显示 */-->
+<!--    background-repeat: no-repeat; /* 不重复显示图片 */-->
+<!--    padding: 70px 500px; /* 内边距，根据图片和文本大小调整 */-->
+<!--    text-align: center; /* 文本居中 */-->
+<!--    text-decoration: none; /* 去除下划线 */-->
+<!--    color: #fff; /* 文本颜色，根据图片调整 */-->
+<!--    transition: all 0.3s ease; /* 过渡效果 */-->
+<!--    background-color: #fff);-->
+<!--    }-->
+<!--    </style>-->
+</head>
+<body>
+<form class="layui-form" style="margin: 30px auto;width: 60%">
+    <input type="password" name="oldpwd" lay-verify="required|oldpwd" placeholder="原密码" class="layui-input">
+    <hr>
+    <input type="password" name="password1" lay-verify="required|password1" placeholder="新密码" class="layui-input">
+    <hr>
+    <input type="password" name="password2" lay-verify="required|password2" placeholder="再次输入新密码" class="layui-input">
+    <hr>
+    <button class="layui-btn" lay-submit lay-filter="demo-verify">提交</button>
+</form>
+
+<script src="/layui/layui.js"></script>
+<script src="/js/jquery-3.7.1.js"></script>
+<script>
+    let oldpwd = "";
+    let newpwd1 = "";
+    let newpwd2 = "";
+    layui.use(function () {
+        var form = layui.form;
+        // 自定义验证规则
+        form.verify({
+            // 验证用户名，且为必填项
+            oldpwd: function (value, elem) {
+                if (value === "") {
+                    return '密码不能为空';
+                }
+                oldpwd = value;
+            },
+            // 验证密码，且为必填项
+            password1: function (value, elem) {
+                if (value === "") {
+                    return '新密码不能为空';
+                }
+                newpwd1 = value;
+            },
+
+            password2: function (value, elem) {
+                if (newpwd1 !== value){
+                    return"两次输入的密码不同！"
+                }
+                newpwd2 = value;
+            }
+        });
+        // 提交事件
+        form.on('submit(demo-verify)', function (data) {
+            let reqData = {
+                "oldpwd":oldpwd,
+                "newpwd":newpwd1
+            }
+            // 此处可执行 Ajax 等操作
+            $.ajax({
+                url: "/api/user/reset_pwd",
+                type: "post",
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify(reqData),
+                success: function (rs) {
+                    if (rs.code === undefined) {
+                        alert("请先登录")
+                        window.open("/page/sign_out", "_blank")
+                    }
+                    if (rs.code === 200) {
+                        alert("修改成功，请重新登录")
+                        window.open("/page/sign_out", "_parent")
+                    } else {
+                        layer.msg(rs.message)
+                    }
+                }
+
+            })
+            return false; // 阻止默认 form 跳转
+        });
+    })
+</script>
+<!--<div class="footer1">-->
+<!--    <a href="https://mail.qq.com" target="_blank" class="link-bg1">若不能修改？请发送信息到QQ邮箱(3216435513@qq.com)</a>-->
+<!--</div>-->
+
+</body>
+</html>

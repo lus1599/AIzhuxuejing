@@ -1,0 +1,384 @@
+
+<!--版本2.0-->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>教师审核员欢迎界面</title>
+    <link rel="stylesheet" href="/lib/layui/css/layui.css">
+    <script src="/js/jquery-3.7.1.js"></script>
+    <script src="/lib/layui/layui.js"></script>
+    <style>
+        /** { margin: 0; padding: 0; box-sizing: border-box; }*/
+        body {
+
+            background-color: #f4f6f9;
+            color: #333;
+            font-family: "Microsoft YaHei", sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 新增小智AI助手样式 */
+        .ai-chat {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: #4CAF50;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            z-index: 999;
+            transition: transform 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-chat:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .ai-window {
+            position: fixed;
+            bottom: 110px;
+            right: 40px;
+            width: 320px;
+            max-height: 400px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .ai-window header {
+            background: #4CAF50;
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .chat-content {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #fafafa;
+            max-height: 300px;
+        }
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .chat-message.bot {
+            background: #e0f7fa;
+            align-self: flex-start;
+        }
+
+        .chat-message.user {
+            background: #c8e6c9;
+            align-self: flex-end;
+        }
+
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: #4CAF50;
+            border: none;
+            padding: 10px 15px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .ai-chat {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            .ai-window {
+                width: 90%;
+                right: 5%;
+            }
+        }
+
+        .welcome-container {
+            margin-top: 50px;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .layui-card {
+            width: 80%;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            opacity: 0;
+        }
+        .layui-card.show {
+            opacity: 1;
+        }
+        .layui-card:hover {
+            transform: scale(1.05);
+        }
+        .layui-card-header {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+        }
+        .layui-btn {
+            width: 80%;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .layui-btn-normal {
+            background: #4CAF50;
+            color: white;
+        }
+        .layui-btn-warm {
+            background: #FF5722;
+            color: white;
+        }
+        .layui-btn:hover {
+            opacity: 0.9;
+        }
+        .assistant-message {
+            background-color: #FF9800;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 18px;
+            margin-top: 30px;
+            animation: fadeInMessage 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInMessage {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+<div class="welcome-container">
+    <h1>👋 欢迎回来，<span id="teacher-name">教师审核员</span></h1>
+    <p>助学金管理系统智能助手，助您高效便捷审核申请！</p>
+</div>
+
+<div id="assistant-message" class="assistant-message" style="display: none;">
+    <!-- 动态内容 -->
+</div>
+
+<div class="layui-row layui-col-space20">
+    <div class="layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">📋 待审核的助学金申请</div>
+            <div class="layui-card-body">
+                <p>查看并审核学生的助学金申请，确保公平公正。</p>
+                <a href="/page/front/tea_apply_jiangxuejin" class="layui-btn layui-btn-normal">🔍 前往审核</a>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">✅ 已审核的助学金名单</div>
+            <div class="layui-card-body">
+                <p>查看已经审核通过的助学金名单，确保记录透明。</p>
+                <a href="/page/front/zxj_stu_list" class="layui-btn layui-btn-warm">📜 查看名单</a>
+            </div>
+        </div>
+    </div>
+
+
+
+<!-- 新增小智AI助手 -->
+<div class="ai-chat" id="aiChat">🤖</div>
+<div class="ai-window" id="aiWindow">
+    <header>AI智能助手 小智</header>
+    <div class="chat-content" id="chatContent">
+        <div class="chat-message bot">您好，我是AI智能助手小智，请问有什么可以帮您？</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="请输入您的问题..." />
+        <button id="sendBtn">发送</button>
+    </div>
+</div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 原有功能保持不变...
+        // 新增小智功能
+        const aiChatButton = document.getElementById('aiChat');
+        const aiWindow = document.getElementById('aiWindow');
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const chatContent = document.getElementById('chatContent');
+
+        // 聊天窗口切换
+        aiChatButton.addEventListener('click', function() {
+            aiWindow.style.display = aiWindow.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // 消息发送处理
+        sendBtn.addEventListener('click', async function() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            // 添加用户消息
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.className = 'chat-message user';
+            userMsgDiv.textContent = userMessage;
+            chatContent.appendChild(userMsgDiv);
+            userInput.value = '';
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            // 添加加载状态
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'chat-message bot';
+            loadingDiv.textContent = '小智正在思考...';
+            chatContent.appendChild(loadingDiv);
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            try {
+                const response = await fetch('/ai/chat?userInput=' + encodeURIComponent(userMessage));
+                const data = await response.text();
+                chatContent.removeChild(loadingDiv);
+
+                const botMsgDiv = document.createElement('div');
+                botMsgDiv.className = 'chat-message bot';
+                botMsgDiv.textContent = data;
+                chatContent.appendChild(botMsgDiv);
+            } catch (error) {
+                chatContent.removeChild(loadingDiv);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'chat-message bot';
+                errorDiv.textContent = '抱歉，小智遇到了一些问题，请稍后重试。';
+                chatContent.appendChild(errorDiv);
+            }
+            chatContent.scrollTop = chatContent.scrollHeight;
+        });
+
+        // 拖拽功能
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        aiChatButton.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            offsetX = e.clientX - aiChatButton.offsetLeft;
+            offsetY = e.clientY - aiChatButton.offsetTop;
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                aiChatButton.style.left = (e.clientX - offsetX) + 'px';
+                aiChatButton.style.top = (e.clientY - offsetY) + 'px';
+                aiChatButton.style.position = 'absolute';
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        // 原有其他代码...
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 假设通过AJAX或其他方法获取待审核的申请数量
+        var pendingApplications = 1;  // 这里的5代表待审核的申请数量，可以根据实际情况动态获取
+
+        // 根据待审核数量显示智能助手的消息
+        var assistantMessage = document.getElementById("assistant-message");
+        if (pendingApplications > 0) {
+            assistantMessage.textContent = `🎯 您有 ${pendingApplications} 个待审核申请，请及时处理！`;
+        } else {
+            assistantMessage.textContent = '🎉 您的工作很棒！所有申请已审核完成！';
+        }
+
+        // 显示智能助手消息
+        setTimeout(function() {
+            assistantMessage.style.display = "inline-block";
+            setTimeout(function() {
+                assistantMessage.style.display = "none";
+            }, 5000);
+        }, 3000);
+
+        // 随机选择本地背景图片
+        var images = [
+            '/mnt/data/A_professional,_modern_educational-themed_backgrou.png',
+            '/mnt/data/background_image_1.jpg',
+            '/mnt/data/background_image_2.jpg',
+            '/mnt/data/background_image_3.jpg'
+        ];
+        var randomIndex = Math.floor(Math.random() * images.length);
+        document.body.style.background = "url('" + images[randomIndex] + "') no-repeat center center/cover";
+
+        if (typeof layui !== "undefined") {
+            layui.use(['element', 'layer'], function(){
+                var layer = layui.layer;
+                layer.msg('🎉 欢迎回来，教师审核员！', {time: 2500, icon: 6});
+            });
+        } else {
+            console.error("Layui 未加载，请检查路径或网络连接。");
+            alert("Layui 未正确加载，请刷新页面或联系管理员。");
+        }
+
+        // 动画显示卡片
+        setTimeout(function() {
+            var cards = document.querySelectorAll('.layui-card');
+            cards.forEach(function(card) {
+                card.classList.add('show');
+            });
+        }, 1000);
+    });
+</script>
+
+</body>
+</html>
+
+
+

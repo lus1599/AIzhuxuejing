@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <input type="text" name="xueqi" placeholder="请输入学期" id="xueqi" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-inline">
+            <button type="button" id="search" data-type="reload" class="layui-btn layui-btn-normal">搜索</button>
+        </div>
+        <div class="layui-inline">
+            <button type="button" id="addscoreInfo" class="layui-btn layui-btn-normal">添加</button>
+        </div>
+    </div>
+</div>
+
+<table class="layui-hide" id="scoreInfo" lay-filter="scoreInfoTable"></table>
+<div id="limit-page">
+
+</div>
+
+<script src="/lib/layui/layui.js" charset="utf-8"></script>
+</body>
+</html>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>
+</script>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script>
+
+    //加载模块
+    layui.use(function () { //亦可加载特定模块：layui.use(['layer', 'laydate', function(){
+        //得到各种内置组件
+        var layer = layui.layer //弹层
+            , table = layui.table //表格
+            , element = layui.element //元素操作
+
+        // 页数的默认名称叫page,不是pageNo,每一页的长度不叫pageSize，叫limit，总的数据条数教count
+        //执行一个 table 实例
+        table.render({
+            elem: '#scoreInfo'
+            , height: 420
+            , url: '/api/score/page' //数据接口
+            , title: '助学金列表'
+            , page: true //开启分页
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', width: '5%', fixed: 'left'}
+                    , {field: 'stuName', title: '学生姓名', align: 'center', fixed: 'left'}
+                    , {field: 'collegeName', title: '班级', align: 'center'}
+                    , {field: 'stuNumber', title: '学号', align: 'center',sort: true}
+                    , {field: 'xueqi', title: '学期', align: 'center'}
+                    , {field: 'scoreDe', title: '语文', align: 'center',sort: true}
+                    , {field: 'scoreZhi', title: '数学', align: 'center',sort: true}
+                    , {field: 'scoreTi', title: '英语', align: 'center',sort: true}
+                    , {field: 'scoreNeng', title: '理综或文综', align: 'center',sort: true}
+                    , {field: 'scoreCount', title: '总分', align: 'center',sort: true}
+                    , {field: 'scoreAvg', title: '平均分', align: 'center',sort: true}
+                    , {fixed: 'right', title: '操作', width: '14%', align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+        });
+
+       //刷新
+        var $ = layui.$, active = {
+            reload: function () {
+                // 查询框里面输入的值
+                var xueqi = $("#xueqi");
+                //执行重载，roleTable是上面table容器的id值
+                table.reload('scoreInfo', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    },
+                    // 把需要传的值放在where里面，都是json格式
+                    where: {
+                        xueqi: xueqi.val(), //重载提交的参数
+                    }
+                });
+            }
+        };
+        // 点击搜索按钮查询，并重新加载table表格
+        $('#search').on('click', function () {
+            // 获取当前查询按钮的类型，layui里面的data-type属性值，这里是reload
+            var type = $(this).data('type');
+            // 告诉框架当前执行的是重新加载并通过call方法去执行
+            active[type] ? active[type].call(this) : '';
+        });
+        //添加信息
+        $("#addscoreInfo").on("click", function () {
+            layer.open({
+                type: 2,
+                title: "添加成绩信息",
+                content: "/page/front/tea_add_score_info",
+                //弹窗大小
+                area: ['400px', '400px'],
+                //弹窗位置
+                offset: ['110px', '400px'],
+                success: function (layero) {
+                    var btn = layero.find('.layui-layer-btn');
+                    btn.find('.layui-layer-btn0').attr({
+                        href: '../index.htm'
+                        , target: '_blank'
+                    });
+                }
+            });
+        })
+
+
+        //监听行工具事件
+        table.on('tool(scoreInfoTable)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'edit') {
+                layer.open({
+                    type: 2,
+                    title: "修改成绩信息",
+                    content: "/page/front/edit_score?id=" + data.id,
+                    area: ['400px', '500px'],
+                    offset: ['110px', '400px'],
+                    success: function (layero) {
+                        var btn = layero.find('.layui-layer-btn');
+                        btn.find('.layui-layer-btn0').attr({
+                            href: '../index.htm'
+                            , target: '_blank'
+                        });
+                    }
+                });
+            } else if (layEvent === 'delete') {
+                layer.confirm("确定删除吗？", function () {
+                    $.ajax({
+                        url: "/api/score/del/" + data.id,
+                        success: function (rs) {
+                            if (rs.code === 200) {
+                                layer.msg("删除成功");
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 500);
+                            } else {
+                                layer.msg(rs.msg);
+                            }
+                        }
+                    });
+                })
+
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

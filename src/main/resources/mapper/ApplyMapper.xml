@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace 表示对应的java接口-->
+<mapper namespace="com.zz.mapper.ApplyMapper">
+    <select id="queryApplyByPage" resultType="com.zz.entities.Apply">
+        select *
+        from apply
+        where tea_work_id = #{workId} limit #{page}
+            , #{limit}
+    </select>
+    <select id="countApply" resultType="com.zz.entities.Apply">
+        select count(*) counts
+        from apply
+        where tea_work_id = #{workId}
+    </select>
+</mapper>

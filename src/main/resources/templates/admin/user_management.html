@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <input type="text" name="username" placeholder="请输入用户名" id="username" autocomplete="off"
+                   class="layui-input">
+        </div>
+        <div class="layui-inline">
+            <button type="button" id="search" data-type="reload" class="layui-btn layui-btn-normal">搜索</button>
+        </div>
+    </div>
+</div>
+
+<table class="layui-hide" id="userInfo" lay-filter="teacherInfoTable"></table>
+<div id="limit-page">
+
+</div>
+
+<script src="/lib/layui/layui.js" charset="utf-8"></script>
+</body>
+</html>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-sm" lay-event="edit">重置密码</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>
+</script>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script>
+
+    //加载模块
+    layui.use(function () {
+        //得到各种内置组件
+        var layer = layui.layer //弹层
+            , table = layui.table //表格
+            , element = layui.element //元素操作
+
+        // 页数的默认名称叫page,不是pageNo,每一页的长度不叫pageSize，叫limit，总的数据条数教count
+        //执行一个 table 实例
+        table.render({
+            elem: '#userInfo'
+            , height: 420
+            , url: '/api/user/query_user_page' //数据接口
+            , title: '用户列表'
+            , page: true //开启分页
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', width: '5%', fixed: 'left'}
+                    , {field: 'username', title: '用户名', align: 'center', width: '20%', fixed: 'left'}
+                    , {field: 'userId', title: '学号/工号', align: 'center', width: '30%'}
+                    , {field: 'createTime', title: '创建时间', width: '25%', align: 'center', sort: true, totalRow: true}
+                    , {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+        });
+        // 获取到layui里面$重新赋值为$本质上跟jquery的$的差不多，然后给当前模块赋一个名字叫active，方便后面用
+        var $ = layui.$, active = {
+            reload: function () {
+                // 查询框里面输入的值
+                var username = $("#username");
+                //执行重载，roleTable是上面table容器的id值
+                table.reload('userInfo', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    },
+                    // 把需要传的值放在where里面，都是json格式
+                    where: {
+                        username: username.val(), //重载提交的参数
+                    }
+                });
+            }
+        };
+        // 点击搜索按钮查询，并重新加载table表格
+        $('#search').on('click', function () {
+            // 获取当前查询按钮的类型，layui里面的data-type属性值，这里是reload
+            var type = $(this).data('type');
+            // 告诉框架当前执行的是重新加载并通过call方法去执行
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+        //监听行工具事件
+        table.on('tool(teacherInfoTable)', function (obj) {
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'edit') {
+                // 使用 layui 的弹窗组件
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    // 弹出对话框
+                    layer.prompt({
+                        formType: 0, // 输入框类型为文本
+                        title: '请输入数据', // 对话框标题
+                        btn: ['提交'], // 自定义按钮文字
+                    }, function (value, index, elem) {
+                        // 用户点击提交按钮后的回调函数，value 为用户输入的值
+                        if (value.trim() === '') {
+                            // 如果输入内容为空，提示用户并返回 false
+                            layer.msg('密码不能为空');
+                            return false;
+                        } else {
+                            // 如果输入内容不为空，输出用户输入的值，并关闭对话框
+                            $.ajax({
+                                url: "/api/admin/reset_user_pwd?id=" + data.id + "&password=" + value,
+                                success: function (rs) {
+                                    if (rs.code === 200) {
+                                        layer.msg("重置成功");
+                                        setTimeout(function () {
+                                            window.location.reload();
+                                        }, 500);
+                                    } else {
+                                        layer.msg(rs.msg);
+                                    }
+                                }
+                            });
+                            // 关闭对话框
+                            layer.close(index);
+                        }
+                    });
+                });
+            } else if (layEvent === 'delete') {
+                layer.confirm("确定删除吗？", function () {
+                    $.ajax({
+                        url: "/api/tea/delete_teacher_by_id?id=" + data.id,
+                        success: function (rs) {
+                            if (rs.code === 200) {
+                                layer.msg("删除成功");
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 500);
+                            } else {
+                                layer.msg(rs.msg);
+                            }
+                        }
+                    });
+                })
+
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

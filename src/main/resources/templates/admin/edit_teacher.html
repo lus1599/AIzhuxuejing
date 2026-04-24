@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/lib/layui/layui.js"></script>
+    <script src="/lib/layui/lay/modules/layer.js"></script>
+    <script src="/lib/layui/lay/modules/admin.js"></script>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<style>
+    .own-input {
+        width: 250px;
+    }
+
+    .own-form {
+        margin-top: 20px;
+    }
+</style>
+<body>
+<form class="layui-form own-form" onsubmit="return false" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" required lay-verify="required" placeholder="请输入姓名" autocomplete="off"
+                   class="layui-input own-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别</label>
+        <div class="layui-input-block">
+            <input type="text" id="sex" required lay-verify="required" placeholder="请输入性别" autocomplete="off"
+                   class="layui-input own-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">年龄</label>
+        <div class="layui-input-block">
+            <input type="text" id="age" required lay-verify="required" placeholder="请输入年龄" autocomplete="off"
+                   class="layui-input own-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">工号</label>
+        <div class="layui-input-block">
+            <input type="text" id="workId" required lay-verify="required" placeholder="请输入工号" autocomplete="off"
+                   class="layui-input own-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="submit" lay-submit lay-filter="demo-validate">确定修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+    <!--    把角色id临时存储到这里，修改以后需要根据这个id来修改信息-->
+    <input id="tempId" style="display:none;">
+</form>
+</body>
+<script>
+    // 这里正常情况外面不加单引号也是可以获取的，不知道是不是中文还是什么原因
+    // 我这里不加单引号获取是会未定义的错误
+    var id = '[[${id}]]'
+
+    layui.use(['layer', 'form'], function () {
+        let layer = layui.layer;
+        let form = layui.form;
+        // 提交事件
+        form.on('submit(demo-validate)', function () {
+            submitTeacherRecordInfo();
+        })
+    });
+    queryTeacherRecordInfoById();
+
+    function queryTeacherRecordInfoById() {
+        $.ajax({
+            url: "/api/tea/query_teacher_by_id?id=" + id,
+            type: "get",
+            contentType: "application/json;charset=utf-8",
+            success: function (rs) {
+                if (rs.code === undefined) {
+                    alert("请先登录")
+                    window.open("/page/sign_out", "_blank")
+                }
+                $("#name").val(rs.data.name);
+                $("#sex").val(rs.data.sex);
+                $("#age").val(rs.data.age);
+                $("#workId").val(rs.data.workId);
+                $("#tempId").val(rs.data.id);
+            }
+
+        })
+    }
+
+    function submitTeacherRecordInfo() {
+        var teacher = {};
+        teacher.name = $("#name").val();
+        teacher.sex = $("#sex").val();
+        teacher.age = $("#age").val();
+        teacher.workId = $("#workId").val();
+        teacher.id = $("#tempId").val();
+        $.ajax({
+            url: "/api/tea/update_teacher",
+            type: "post",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(teacher),
+            success: function (rs) {
+                if (rs.code === undefined) {
+                    alert("请先登录")
+                    window.open("/page/sign_out", "_blank")
+                }
+                if (rs.code === 200) {
+                    layer.msg("修改成功")
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                        window.parent.location.reload();
+                    }, 1200)
+                }
+            }
+
+        })
+
+    }
+</script>
+</html>

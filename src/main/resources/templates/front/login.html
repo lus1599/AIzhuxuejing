@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台江县民族中学助学金智能管理信息系统登录页面</title>
+
+<!--    logo 图标-->
+<!--    <link rel="icon" href="E:\project\src\main\resources\static\favicon.ico" type="image/x-icon">-->
+<!--    <link rel="favicon icon" href="E:\project\src\main\resources\static\favicon.ico" type="image/x-icon">-->
+
+
+
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
+    <link href="/layui/css/layui.css" rel="stylesheet">
+    <style>
+
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            transition: transform 0.2s, box-shadow 0.2s; /* 动态效果 */
+        }
+
+        /*.login-btn {*/
+        /*    background-color: #ffffff;*/
+        /*}*/
+
+        /* 按钮悬停效果 */
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+
+
+
+
+
+
+
+        body {
+            background-image: url("/images/pic/zhuyebejing.jpg");
+            background-repeat: no-repeat;
+            /*background-repeat: repeat;*/
+            background-size: 100% 90%;
+            /*background-size: cover;*/
+            background-position: center;
+            margin: 0;
+            padding: 0;
+        }
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.7);
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .form h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form input {
+            outline: 0;
+            background: #f7f7f7;
+            width: 100%;
+            border: 1px solid #ccc;
+            margin: 0 0 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .form button {
+            background: #0dc3ae;
+            width: 100%;
+            border: none;
+            padding: 12px;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .form button:hover {
+            background: #51b60e;
+        }
+        .form .message {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+        .form .message a {
+            color: #51b60e;
+            text-decoration: none;
+        }
+        .form .message a:hover {
+            text-decoration: underline;
+        }
+        .code-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #imgBase64 {
+            width: 100px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            color: #000000;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="login-page">
+    <div class="form" id="login_form">
+        <h2>台江县民族中学助学金智能管理信息系统</h2>
+        <form class="login-form">
+            <input type="text" placeholder="用户名" id="user_name"/>
+            <input type="password" placeholder="密码" id="password"/>
+            <div class="code-container">
+                <input type="text" placeholder="验证码" id="code"/>
+                <img id="imgBase64" title="点击刷新验证码"/>
+            </div>
+            <div class="layui-form">
+                <input type="radio" name="AAA" value="student" title="学生" lay-filter="demo-radio-filter" checked>
+                <input type="radio" name="AAA" value="teacher" title="审核教师" lay-filter="demo-radio-filter">
+                <input type="radio" name="AAA" value="admin" title="系统管理员" lay-filter="demo-radio-filter">
+            </div>
+            <button type="submit" id="login">登入</button>
+            <p class="message">还没有账户? <a id="toRegister" href="#">立刻创建</a></p>
+        </form>
+        <form class="register-form" style="display: none;">
+            <input type="text" placeholder="用户名" id="r_user_name"/>
+            <input type="password" placeholder="密码" id="r_password"/>
+            <input type="text" placeholder="学生学号或教职工工号" id="user_id"/>
+            <button type="submit" id="create">创建账户</button>
+            <p class="message">有了账户? <a id="toLogin" href="#" class="btn login-btn">立刻登录</a></p>
+        </form>
+    </div>
+</div>
+<div>
+    <footer class="footer">
+        <p >© 2024 智能助学金管理系统 - 让教育资源更公平</p>
+    </footer>
+</div>
+
+
+
+
+
+
+<script src="/js/jquery-3.7.1.js"></script>
+<script src="/layui/layui.js"></script>
+<script type="text/javascript">
+    let user = {
+        role: "student"
+    };
+
+    layui.use(['layer', 'form'], function () {
+        let layer = layui.layer
+            , form = layui.form;
+
+        // radio 事件
+        form.on('radio(demo-radio-filter)', function (data) {
+            let elem = data.elem; // 获得 radio 原始 DOM 对象
+            let value = elem.value; // 获得 radio 值
+
+            user.role = value;
+        });
+    });
+
+    //页面加载完成后调用
+    window.onload = function () {
+        this.getCode();
+    }
+
+    function getCode() {
+        $.ajax({
+            url: "/api/code",
+            type: "get",
+            contentType: "application/json;charset=utf-8",
+            success: function (res) {
+                if (res.code === 200) {
+                    user.uuid = res.data.uuid;
+                    let img = document.getElementById("imgBase64");
+                    img.src = res.data.base64;
+
+                    console.log(user)
+                } else {
+                    layer.msg("获取验证码失败")
+                }
+            }
+        })
+    }
+
+    function check_login() {
+        user.username = $("#user_name").val();
+        user.password = $("#password").val();
+        user.code = $("#code").val()
+
+        if (user.username !== "" && user.password !== "" && user.code !== "") {
+            $.ajax({
+                url: "/api/user/login",
+                type: "post",
+                data: JSON.stringify(user),
+                contentType: "application/json;charset=utf-8",
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg("登录成功");
+                        if (res.data.role === "admin") {
+                            window.location.href = "/page/admin/index";
+                        } else if (res.data.role === "teacher") {
+                            window.location.href = "/page/front/tea_index";
+                        } else if (res.data.role === "student") {
+                            window.location.href = "/page/front/stu_index";
+                        } else {
+                            layer.msg("出错了");
+                        }
+                    } else {
+                        layer.msg(res.message)
+                    }
+                }
+            })
+        } else {
+            layer.msg("用户名、密码或验证码不能为空")
+        }
+    }
+
+    function check_register() {
+        var user = {};
+        user.username = $("#r_user_name").val();
+        user.password = $("#r_password").val();
+        user.userId = $("#user_id").val();
+        if (user.username !== "" && user.password !== "" && user.userId !== "") {
+            $.ajax({
+                url: "/api/user/register",
+                type: "post",
+                data: JSON.stringify(user),
+                contentType: "application/json;charset=utf-8",
+                success: function (rs) {
+                    console.log(rs);
+                    if (rs.code === 200) {
+                        layer.msg(rs.message);
+                        // 同时跳转到登录页面
+                        $('form').animate({
+                            height: 'toggle',
+                            opacity: 'toggle'
+                        }, 'slow');
+                    } else {
+                        layer.msg(rs.message);
+                    }
+                }
+            })
+        } else {
+            layer.msg("任何一项都不能为空")
+        }
+    }
+
+    $("#imgBase64").click(function () {
+        getCode();
+    })
+    $("#create").click(function () {
+        check_register();
+        return false;
+    })
+    $("#login").click(function () {
+        check_login();
+        return false;
+    })
+    $('#toRegister').click(function () {
+        $('form').animate({
+            height: 'toggle',
+            opacity: 'toggle'
+        }, 'slow');
+    })
+    $('#toLogin').click(function () {
+        $('form').animate({
+            height: 'toggle',
+            opacity: 'toggle'
+        }, 'slow');
+    });
+</script>
+</body>
+</html>

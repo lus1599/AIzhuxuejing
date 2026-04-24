@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace 表示对应的java接口-->
+<mapper namespace="com.zz.mapper.JiangChengMapper">
+    <select id="queryPage" resultType="com.zz.entities.JiangCheng">
+        select *
+        from jiang_cheng
+        where stu_name like #{stuName}
+          and type like #{type} limit #{page}
+            , #{limit}
+    </select>
+    <select id="counts" resultType="com.zz.entities.JiangCheng">
+        select count(*) counts
+        from jiang_cheng
+        where stu_name like #{stuName}
+          and type like #{type}
+    </select>
+</mapper>
